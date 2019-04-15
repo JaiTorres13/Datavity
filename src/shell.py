@@ -1,8 +1,8 @@
-from src import basic
+from src import Datavity
 
 while True:
-	text = input('basic > ')
-	result, error = basic.run('<stdin>', text)
+	text = input('Datavity > ')
+	result, error = Datavity.run('<stdin>', text)
 
 	if error: print(error.as_string())
 	elif result: print(result)
