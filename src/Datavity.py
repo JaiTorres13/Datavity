@@ -2,14 +2,16 @@
 # IMPORTS
 #######################################
 
-import strings_with_arrows
+from src import strings_with_arrows
 
 import string
+
+from src.strings_with_arrows import string_with_arrows
 
 #######################################
 # CONSTANTS
 #######################################
-from strings_with_arrows import string_with_arrows
+
 
 DIGITS = '0123456789'
 LETTERS = string.ascii_letters
