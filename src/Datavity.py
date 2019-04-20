@@ -2,14 +2,14 @@
 # IMPORTS
 #######################################
 
-from src import strings_with_arrows
+import strings_with_arrows
 
 import string
 
 #######################################
 # CONSTANTS
 #######################################
-from src.strings_with_arrows import string_with_arrows
+from strings_with_arrows import string_with_arrows
 
 DIGITS = '0123456789'
 LETTERS = string.ascii_letters
@@ -27,7 +27,7 @@ class Error:
 		self.details = details
 	
 	def as_string(self):
-		result  = f'{self.error_name}: {self.details}\n'
+		result = f'{self.error_name}: {self.details}\n'
 		result += f'File {self.pos_start.fn}, line {self.pos_start.ln + 1}'
 		result += '\n\n' + string_with_arrows(self.pos_start.ftxt, self.pos_start, self.pos_end)
 		return result
@@ -108,6 +108,8 @@ TT_POW				= 'POW'
 TT_EQ					= 'EQ'
 TT_LPAREN   	= 'LPAREN'
 TT_RPAREN   	= 'RPAREN'
+TT_SRPAREN		= 'SRPAREN'
+TT_SLPAREN		= 'SLPAREN'
 TT_EE					= 'EE'
 TT_NE					= 'NE'
 TT_LT					= 'LT'
@@ -124,7 +126,13 @@ KEYWORDS = [
 	'IF',
 	'THEN',
 	'ELIF',
-	'ELSE'
+	'ELSE',
+	'MEAN',
+	'MIN',
+	'MAX',
+	'LOG',
+	'SCALE',
+
 ]
 
 class Token:
@@ -193,6 +201,12 @@ class Lexer:
 				self.advance()
 			elif self.current_char == ')':
 				tokens.append(Token(TT_RPAREN, pos_start=self.pos))
+				self.advance()
+			elif self.current_char == '[':
+				tokens.append(Token(TT_SLPAREN, pos_start=self.pos))
+				self.advance()
+			elif self.current_char == ']':
+				tokens.append(Token(TT_SRPAREN, pos_start=self.pos))
 				self.advance()
 			elif self.current_char == '!':
 				token, error = self.make_not_equals()
@@ -487,6 +501,21 @@ class Parser:
 					"Expected ')'"
 				))
 		
+		elif tok.type == TT_SLPAREN:
+			res.register_advancement()
+			self.advance()
+			expr = res.register(self.expr())
+			if res.error: return res
+			if self.current_tok.type == TT_SRPAREN:
+				res.register_advancement()
+				self.advance()
+				return res.success(expr)
+			else:
+				return res.failure(InvalidSyntaxError(
+					self.current_tok.pos_start, self.current_tok.pos_end,
+					"Expected ']'"
+				))
+		
 		elif tok.matches(TT_KEYWORD, 'IF'):
 			if_expr = res.register(self.if_expr())
 			if res.error: return res
@@ -494,7 +523,7 @@ class Parser:
 
 		return res.failure(InvalidSyntaxError(
 			tok.pos_start, tok.pos_end,
-			"Expected int, float, identifier, '+', '-', '('"
+			"Expected int, float, identifier, '+', '-', '(', '["
 		))
 
 	def power(self):
@@ -536,7 +565,7 @@ class Parser:
 		if res.error:
 			return res.failure(InvalidSyntaxError(
 				self.current_tok.pos_start, self.current_tok.pos_end,
-				"Expected int, float, identifier, '+', '-', '(' or 'NOT'"
+				"Expected int, float, identifier, '+', '-', '(', '[' or 'NOT'"
 			))
 
 		return res.success(node)
@@ -575,7 +604,7 @@ class Parser:
 		if res.error:
 			return res.failure(InvalidSyntaxError(
 				self.current_tok.pos_start, self.current_tok.pos_end,
-				"Expected 'VAR', int, float, identifier, '+', '-', '(' or 'NOT'"
+				"Expected 'VAR', int, float, identifier, '+', '-', '(', '[' or 'NOT'"
 			))
 
 		return res.success(node)
