@@ -1,5 +1,8 @@
-expr				: KEYWORD:VAR IDENTIFIER EQ expr
+expr				: KEYWORD: LIST IDENTIFIER EQ list
+					: KEYWORD:VAR IDENTIFIER EQ expr
 						: comp-expr ((KEYWORD:AND|KEYWORD:OR) comp-expr)*
+
+list       : LBRACKET COMMA expr* COMMA RBRACKET
 
 comp-expr		: NOT comp-expr
 						: arith-expr ((EE|LT|GT|LTE|GTE) arith-expr)*

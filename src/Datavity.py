@@ -108,8 +108,9 @@ TT_POW				= 'POW'
 TT_EQ					= 'EQ'
 TT_LPAREN   	= 'LPAREN'
 TT_RPAREN   	= 'RPAREN'
-TT_SRPAREN		= 'SRPAREN'
-TT_SLPAREN		= 'SLPAREN'
+TT_RBRACKET		= 'RBRACKET'
+TT_LBRACKET		= 'LBRACKET'
+TT_COMMA		= 'COMMA'
 TT_EE					= 'EE'
 TT_NE					= 'NE'
 TT_LT					= 'LT'
@@ -132,6 +133,8 @@ KEYWORDS = [
 	'MAX',
 	'LOG',
 	'SCALE',
+	'FILE',
+	'LIST'
 
 ]
 
@@ -203,10 +206,13 @@ class Lexer:
 				tokens.append(Token(TT_RPAREN, pos_start=self.pos))
 				self.advance()
 			elif self.current_char == '[':
-				tokens.append(Token(TT_SLPAREN, pos_start=self.pos))
+				tokens.append(Token(TT_LBRACKET, pos_start=self.pos))
 				self.advance()
 			elif self.current_char == ']':
-				tokens.append(Token(TT_SRPAREN, pos_start=self.pos))
+				tokens.append(Token(TT_RBRACKET, pos_start=self.pos))
+				self.advance()
+			elif self.current_char == ',':
+				tokens.append(Token(TT_COMMA, pos_start=self.pos))
 				self.advance()
 			elif self.current_char == '!':
 				token, error = self.make_not_equals()
@@ -254,6 +260,17 @@ class Lexer:
 
 		tok_type = TT_KEYWORD if id_str in KEYWORDS else TT_IDENTIFIER
 		return Token(tok_type, id_str, pos_start, self.pos)
+	
+	# def make_name(self):
+	# 	id_name = ''
+	# 	pos_start = self.pos.copy()
+
+	# 	while self.current_char != None and self.current_char in LETTERS_DIGITS + '_':
+	# 		id_name += self.current_char
+	# 		self.advance()
+
+	# 	tok_type = TT_KEYWORD if id_name in KEYWORDS else TT_NAME
+	# 	return Token(tok_type, id_name, pos_start, self.pos)
 
 	def make_not_equals(self):
 		pos_start = self.pos.copy()
@@ -403,11 +420,11 @@ class Parser:
 		return self.current_tok
 
 	def parse(self):
-		res = self.expr()
+		res = self.listf()
 		if not res.error and self.current_tok.type != TT_EOF:
 			return res.failure(InvalidSyntaxError(
 				self.current_tok.pos_start, self.current_tok.pos_end,
-				"Expected '+', '-', '*', '/', '^', '==', '!=', '<', '>', <=', '>=', 'AND' or 'OR'"
+				"Expected '+', '-', '*', '/', '^', '==', '!=', '<', '>', <=', '>=', ',' , 'AND' or 'OR'"
 			))
 		return res
 
@@ -501,12 +518,12 @@ class Parser:
 					"Expected ')'"
 				))
 		
-		elif tok.type == TT_SLPAREN:
+		elif tok.type == TT_LBRACKET:
 			res.register_advancement()
 			self.advance()
 			expr = res.register(self.expr())
 			if res.error: return res
-			if self.current_tok.type == TT_SRPAREN:
+			if self.current_tok.type == TT_RBRACKET:
 				res.register_advancement()
 				self.advance()
 				return res.success(expr)
@@ -593,11 +610,13 @@ class Parser:
 					"Expected '='"
 				))
 
+			 
 			res.register_advancement()
 			self.advance()
 			expr = res.register(self.expr())
 			if res.error: return res
 			return res.success(VarAssignNode(var_name, expr))
+		
 
 		node = res.register(self.bin_op(self.comp_expr, ((TT_KEYWORD, 'AND'), (TT_KEYWORD, 'OR'))))
 
@@ -609,7 +628,76 @@ class Parser:
 
 		return res.success(node)
 
+	def listf(self):
+		res = ParseResult()
+		if self.current_tok.matches(TT_KEYWORD, 'LIST'):
+			res.register_advancement()
+			self.advance()
+
+			if self.current_tok.type != TT_IDENTIFIER:
+				return res.failure(InvalidSyntaxError(
+					self.current_tok.pos_start, self.current_tok.pos_end,
+					"Expected identifier"
+				))
+
+			var_name = self.current_tok
+			res.register_advancement()
+			self.advance()
+
+			if self.current_tok.type != TT_EQ:
+				return res.failure(InvalidSyntaxError(
+					self.current_tok.pos_start, self.current_tok.pos_end,
+					"Expected '='"
+				))
+			res.register_advancement()
+			self.advance()
+
+			if self.current_tok.type != TT_LBRACKET:
+				return res.failure(InvalidSyntaxError(
+					self.current_tok.pos_start, self.current_tok.pos_end,
+					"Expected '['"
+				))
+
+			res.register_advancement()
+			self.advance()
+
+			if self.current_tok.type != TT_IDENTIFIER:
+				return res.failure(InvalidSyntaxError(
+					self.current_tok.pos_start, self.current_tok.pos_end,
+					"Expected identifier"
+				))
+
+			listf = self.current_tok
+			res.register_advancement()
+			self.advance()
+
+			if self.current_tok.type != TT_RBRACKET:
+				return res.failure(InvalidSyntaxError(
+					self.current_tok.pos_start, self.current_tok.pos_end,
+					"Expected ']'"
+				))
+			
+			res.register_advancement()
+			self.advance()
+			if res.error: return res
+			return res.success(VarAssignNode(var_name, listf))
+	
 	###################################
+
+	def list_op(self, fun_a, ops, fun_b):
+		res = ParseResult()
+		left = res.register(fun_a)
+		if res.error: return res
+
+		while self.current_tok.type in ops or (self.current_tok.type, self.current_tok.value) in ops:
+			op_tok = self.current_tok
+			res.register_advancement()
+			self.advance()
+			right = res.register(fun_b)
+			if res.error: return res
+			left = BinOpNode(left, op_tok, right)
+
+		return res.success(left)
 
 	def bin_op(self, func_a, ops, func_b=None):
 		if func_b == None:
