@@ -5,6 +5,19 @@
 import strings_with_arrows
 
 import string
+import math
+
+from IPython import display
+from matplotlib import cm
+from matplotlib import gridspec
+from matplotlib import pyplot as plt
+import numpy as np
+import pandas as pd
+from mpl_toolkits.mplot3d import Axes3D
+from sklearn import metrics
+#import tensorflow as tf
+#from tensorflow.contrib.learn.python.learn import learn_io, estimator
+
 
 #######################################
 # CONSTANTS
@@ -15,6 +28,30 @@ DIGITS = '0123456789'
 LETTERS = string.ascii_letters
 LETTERS_DIGITS = LETTERS + DIGITS
 
+#######################################
+# DOWNLOAD DATASET & CREATE DATAFRAME
+#######################################
+
+# Set the output display to have one digit for decimal places, for display
+# readability only and limit it to printing 15 rows.
+pd.options.display.float_format = '{:.2f}'.format
+pd.options.display.max_rows = 20
+
+# Provide the names for the columns since the CSV file with the data does
+# not have a header row.
+cols = ['symboling', 'losses', 'make', 'fuel-type', 'aspiration', 'num-doors',
+        'body-style', 'drive-wheels', 'engine-location', 'wheel-base',
+        'length', 'width', 'height', 'weight', 'engine-type', 'num-cylinders',
+        'engine-size', 'fuel-system', 'bore', 'stroke', 'compression-ratio',
+        'horsepower', 'peak-rpm', 'city-mpg', 'highway-mpg', 'price']
+
+print("hello there")
+
+# Load in the data from a CSV file that is comma seperated.
+# car_data = pd.read_csv('~/Desktop/Datavity_PL/Datavity/DataSamples/imports-85.data',
+#                         sep=',', names=cols, header=None, encoding='latin-1')
+
+print("done with import")
 #######################################
 # ERRORS
 #######################################
@@ -132,9 +169,13 @@ KEYWORDS = [
 	'MIN',
 	'MAX',
 	'LOG',
-	'SCALE',
-	'FILE',
-	'LIST'
+	'LINEAR',
+	'FEATURES',
+	'CLEAN',
+	'DESCRIBE',
+	'CLEAN',
+	'ZERO',
+	'CLIPPING'
 
 ]
 
@@ -260,17 +301,6 @@ class Lexer:
 
 		tok_type = TT_KEYWORD if id_str in KEYWORDS else TT_IDENTIFIER
 		return Token(tok_type, id_str, pos_start, self.pos)
-	
-	# def make_name(self):
-	# 	id_name = ''
-	# 	pos_start = self.pos.copy()
-
-	# 	while self.current_char != None and self.current_char in LETTERS_DIGITS + '_':
-	# 		id_name += self.current_char
-	# 		self.advance()
-
-	# 	tok_type = TT_KEYWORD if id_name in KEYWORDS else TT_NAME
-	# 	return Token(tok_type, id_name, pos_start, self.pos)
 
 	def make_not_equals(self):
 		pos_start = self.pos.copy()
@@ -319,6 +349,14 @@ class Lexer:
 #######################################
 # NODES
 #######################################
+
+class FeatureNode:
+	def __init__(self, tok):
+		self.tok = tok
+
+		self.pos_start = self.tok.pos_start
+		self.pos_end = self.tok.pos_end
+
 
 class NumberNode:
 	def __init__(self, tok):
@@ -420,7 +458,7 @@ class Parser:
 		return self.current_tok
 
 	def parse(self):
-		res = self.listf()
+		res = self.feature()
 		if not res.error and self.current_tok.type != TT_EOF:
 			return res.failure(InvalidSyntaxError(
 				self.current_tok.pos_start, self.current_tok.pos_end,
@@ -429,6 +467,39 @@ class Parser:
 		return res
 
 	###################################
+
+
+	def feature(self):
+		res = ParseResult()
+		print('feature')
+		if self.current_tok.matches(TT_KEYWORD, 'FEATURES'):
+			res.register_advancement()
+			self.advance()
+
+			if self.current_tok.type != TT_LPAREN:
+				return res.failure(InvalidSyntaxError(
+					self.current_tok.pos_start, self.current_tok.pos_end,
+					"Expected '('"
+				))
+
+			res.register_advancement()
+			self.advance()
+
+			if self.current_tok.type != TT_RPAREN:
+				return res.failure(InvalidSyntaxError(
+					self.current_tok.pos_start, self.current_tok.pos_end,
+					"Expected ')'"
+				))
+			print(cols)
+		
+		print('done features')
+		if res.error:
+			return res.failure(InvalidSyntaxError(
+				self.current_tok.pos_start, self.current_tok.pos_end,
+				"Expected 'FEATURE', identifier"
+			))
+		return res.success(FeatureNode(self.current_tok))
+
 
 	def if_expr(self):
 		res = ParseResult()
