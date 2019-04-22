@@ -8,7 +8,7 @@ while True:
         break
     elif text == "help":
         print("Datavity: The Feature Engineering Language\n")
-        print("\tShow the title of all colums: FEATURE()\n")
+        print("\tShow the title of all columns: FEATURE()\n")
         print("\tShows 4 histograms, without change, applying linear scaling, log scaling and clipping: "
               "TRANSFORM(dataFrame)\n")
         print("\tShow first 20 rows of dataFrame: DESCRIBE()\n")
