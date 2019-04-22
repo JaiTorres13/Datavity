@@ -1,4 +1,4 @@
-from src import Datavity
+import Datavity
 
 while True:
     text = input('Datavity > ')
