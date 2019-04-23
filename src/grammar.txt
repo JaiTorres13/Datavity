@@ -1,36 +1,8 @@
-expr				: KEYWORD: LIST IDENTIFIER EQ list
-					: KEYWORD:VAR IDENTIFIER EQ expr
-						: comp-expr ((KEYWORD:AND|KEYWORD:OR) comp-expr)*
 
-list       : LBRACKET COMMA expr* COMMA RBRACKET
-
-comp-expr		: NOT comp-expr
-						: arith-expr ((EE|LT|GT|LTE|GTE) arith-expr)*
-
-arith-expr	:	term ((PLUS|MINUS) term)*
-
-term				: factor ((MUL|DIV) factor)*
-
-factor			: (PLUS|MINUS) factor
-						: power
-
-power				: atom (POW factor)*
-
-atom 				: INT|FLOAT|IDENTIFIER
-						: LPAREN expr RPAREN
-						: if-expr
-
-if-expr			: KEYWORD:IF expr KEYWORD:THEN expr
-							(KEYWORD:ELIF expr KEYWORD:THEN expr)*
-							(KEYWORD:ELSE expr)?
-
-
-feature			: KEYWORD: FEATURE LPAREN RPAREN
+feature			: KEYWORD: FEATURES LPAREN RPAREN
 clean			: KEYWORD: CLEAN LPAREN KEYWORD: MIN  RPAREN
 				: KEYWORD: CLEAN LPAREN KEYWORD: MAX RPAREN
 				: KEYWORD: CLEAN LPAREN KEYWORD: MEAN  RPAREN
 				: KEYWORD: CLEAN LPAREN KEYWORD: ZERO RPAREN
-transform		: KEYWORD: TRANSFORM LPAREN KEYWORD: LINEAR RPAREN
-				: KEYWORD: TRANSFORM LPAREN KEYWORD: LOG RPAREN
-				: KEYWORD: TRANSFORM LPAREN KEYWORD: CLIPPING RPAREN
-describe		: KEYWORD: DESCRIBE LPAREN RPAREN
+transform		: KEYWORD: TRANSFORM LPAREN feature_name RPAREN
+rmse			: KEYWORD: RMSE LPAREN clean feature_name feature_name RPAREN

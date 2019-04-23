@@ -560,7 +560,7 @@ def RMSE(way, x, y):
 # FEATURES()
 # TRANSFORM(feature) where feature is any string
 # CLEAN(ZERO) it can be also MIN, MAX, MEAN
-# RMSE(ZERO, feature, feature) where feature is any string & first param can be also MIN, MAX, MEAN
+# RMSE(ZERO feature feature) where feature is any string & first param can be also MIN, MAX, MEAN
 
 #######################################
 # RUN
