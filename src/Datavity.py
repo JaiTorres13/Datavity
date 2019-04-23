@@ -46,16 +46,15 @@ cols = ['symboling', 'losses', 'make', 'fuel-type', 'aspiration', 'num-doors',
         'horsepower', 'peak-rpm', 'city-mpg', 'highway-mpg', 'price']
 NUMERIC_FEATURES = ['compression-ratio', 'horsepower', 'peak-rpm', 'city-mpg', 'highway-mpg', 'price',
 			'symboling', 'losses', 'wheel-base', 'length', 'width', 'height', 'weight' , 'engine-size']
-print("hello there")
 
 #Load in the data from a CSV file that is comma seperated.
-car_data = pd.read_csv('~/Desktop/Datavity_PL/Datavity/DataSamples/imports-85.csv',
+dataset = pd.read_csv('~/Desktop/Datavity_PL/Datavity/imports-85.csv',
                         sep=',', names=cols, header=None, encoding='latin-1')
 
 print("done with import")
 
 for fe in NUMERIC_FEATURES:
-	car_data[fe] = pd.to_numeric(car_data[fe], errors='coerce')
+	dataset[fe] = pd.to_numeric(dataset[fe], errors='coerce')
 
 #######################################
 # ERRORS
@@ -142,12 +141,6 @@ TT_INT				= 'INT'
 TT_FLOAT    	= 'FLOAT'
 TT_IDENTIFIER	= 'IDENTIFIER'
 TT_KEYWORD		= 'KEYWORD'
-TT_PLUS     	= 'PLUS'
-TT_MINUS    	= 'MINUS'
-TT_MUL      	= 'MUL'
-TT_DIV      	= 'DIV'
-TT_POW				= 'POW'
-TT_EQ					= 'EQ'
 TT_LPAREN   	= 'LPAREN'
 TT_RPAREN   	= 'RPAREN'
 TT_RBRACKET		= 'RBRACKET'
@@ -157,24 +150,14 @@ TT_EOF				= 'EOF'
 
 KEYWORDS = [
 	'VAR',
-	'AND',
-	'OR',
-	'NOT',
-	'IF',
-	'THEN',
-	'ELIF',
-	'ELSE',
 	'MEAN',
 	'MIN',
 	'MAX',
-	'LOG',
-	'LINEAR',
 	'FEATURES',
 	'CLEAN',
-	'DESCRIBE',
-	'CLEAN',
 	'ZERO',
-	'CLIPPING'
+	'TRANSFORM',
+	'RMSE'
 
 ]
 
@@ -224,21 +207,6 @@ class Lexer:
 				tokens.append(self.make_number())
 			elif self.current_char in LETTERS:
 				tokens.append(self.make_identifier())
-			elif self.current_char == '+':
-				tokens.append(Token(TT_PLUS, pos_start=self.pos))
-				self.advance()
-			elif self.current_char == '-':
-				tokens.append(Token(TT_MINUS, pos_start=self.pos))
-				self.advance()
-			elif self.current_char == '*':
-				tokens.append(Token(TT_MUL, pos_start=self.pos))
-				self.advance()
-			elif self.current_char == '/':
-				tokens.append(Token(TT_DIV, pos_start=self.pos))
-				self.advance()
-			elif self.current_char == '^':
-				tokens.append(Token(TT_POW, pos_start=self.pos))
-				self.advance()
 			elif self.current_char == '(':
 				tokens.append(Token(TT_LPAREN, pos_start=self.pos))
 				self.advance()
@@ -428,100 +396,171 @@ class Parser:
 			))
 		return res.success(FeatureNode(self.current_tok))
 
+#END OF PARSER
+#############################################
+#Intermediate Code
+#############################################
 
 def FEATURES():
 	for feature in cols:
-				print (feature)
+		print (feature)
+
 
 def CLEAN(way):
-	clean_data = car_data.copy()
+	
+	clean_data = dataset.copy()
 	way_s = str(way).lower()
-	print(way_s)
 	if (way_s[-4:] == 'zero'):
 		clean_data.fillna(0, inplace=True)
 		
 	elif (way_s[-4:] == 'mean'):
 		for feature in NUMERIC_FEATURES:
-			clean_data.fillna({feature: car_data[feature].mean()}, inplace=True)
+			clean_data.fillna({feature: dataset[feature].mean()}, inplace=True)
 	
 	elif (way_s[-3:] == 'min'):
 		for feature in NUMERIC_FEATURES:
-			clean_data.fillna({feature: car_data[feature].min()}, inplace=True)
+			clean_data.fillna({feature: dataset[feature].min()}, inplace=True)
 
 	else:
 		for feature in NUMERIC_FEATURES:
-			clean_data.fillna({feature: car_data[feature].max()}, inplace=True)
-			# car_data.fillna(car_data[feature].mean(), inplace=True)
+			clean_data.fillna({feature: dataset[feature].max()}, inplace=True)
 	
+	ways = way_s[-4:]
+	if (ways[0] == ':'):
+		ways = ways[-3:]
+	print('Replaced Nans with ' + ways)
 	print(clean_data[1:20])
+	return clean_data
 
-#END OF PARSER
 
-#######################################
-# RUNTIME RESULT
-#######################################
+#############################################################
 
-# class RTResult:
-# 	def __init__(self):
-# 		self.value = None
-# 		self.error = None
+# Linearly rescales to the range [0, 1]
+def linear_scale(series):
+  min_val = series.min()
+  max_val = series.max()
+  scale = 1.0 * (max_val - min_val)
+  return series.apply(lambda x:((x - min_val) / scale))
 
-# 	def register(self, res):
-# 		if res.error: self.error = res.error
-# 		return res.value
+# Perform log scaling
+def log_scale(series):
+  return series.apply(lambda x:math.log(x+1.0))
 
-# 	def success(self, value):
-# 		self.value = value
-# 		return self
-
-# 	def failure(self, error):
-# 		self.error = error
-# 		return self
-
-#######################################
-# VALUES
-#######################################
-
-# class Number:
-# 	def __init__(self, value):
-# 		self.value = value
-# 		self.set_pos()
-# 		self.set_context()
-
-# 	def set_pos(self, pos_start=None, pos_end=None):
-# 		self.pos_start = pos_start
-# 		self.pos_end = pos_end
-# 		return self
-
-# 	def set_context(self, context=None):
-# 		self.context = context
-# 		return self
-
-# 	def copy(self):
-# 		copy = Number(self.value)
-# 		copy.set_pos(self.pos_start, self.pos_end)
-# 		copy.set_context(self.context)
-# 		return copy
-
-# 	def is_true(self):
-# 		return self.value != 0
-	
-# 	def __repr__(self):
-# 		return str(self.value)
-
-#######################################
-# CONTEXT
-#######################################
-
-# class Context:
-# 	def __init__(self, display_name, parent=None, parent_entry_pos=None):
-# 		self.display_name = display_name
-# 		self.parent = parent
-# 		self.parent_entry_pos = parent_entry_pos
-# 		self.symbol_table = None
+# Clip all features to given min and max
+def clip(series, clip_to_min, clip_to_max):
+  # You need to modify this to actually do the clipping versus just returning
+  # the series unchanged
+  
+  return series.apply(lambda x: clip_to_min if x<clip_to_min else clip_to_max if x>clip_to_max else x)
 
 
 
+def TRANSFORM(feature_name):
+  
+  dataframe = dataset
+  clip_min = -np.inf
+  clip_max = np.inf
+  plt.figure(figsize=(20, 5))
+  plt.subplot(1, 3, 1)
+  plt.title(feature_name)
+  histogram = dataframe[feature_name].hist(bins=50)
+
+  plt.subplot(1, 3, 2)
+  plt.title("linear_scaling")
+  scaled_features = dataset.copy()
+  scaled_features[feature_name] = linear_scale(
+      clip(dataframe[feature_name], clip_min, clip_max))
+  histogram = scaled_features[feature_name].hist(bins=50)
+  
+  plt.subplot(1, 3, 3)
+  plt.title("log scaling")
+  log_normalized_features = dataset.copy()
+  log_normalized_features[feature_name] = log_scale(dataframe[feature_name])
+  histogram = log_normalized_features[feature_name].hist(bins=50)
+  plt.show(histogram) 
+
+ 
+def make_scatter_plot(dataframe, input_feature, target,
+                      slopes=[], biases=[], model_names=[]):
+  """ Creates a scatter plot of input_feature vs target along with the models.
+  
+  Args:
+    dataframe: the dataframe to visualize
+    input_feature: the input feature to be used for the x-axis
+    target: the target to be used for the y-axis
+    slopes: list of model weight (slope) 
+    bias: list of model bias (same size as slopes)
+    model_names: list of model_names to use for legend (same size as slopes)
+  """      
+  # Define some colors to use that go from blue towards red
+  cmap = cm.get_cmap("spring")
+  colors = [cmap(x) for x in np.linspace(0, 1, len(slopes))]
+  
+  # Generate the Scatter plot
+  x = dataframe[input_feature]
+  y = dataframe[target]
+  plt.ylabel(target)
+  plt.xlabel(input_feature)
+  plt.scatter(x, y, color='black', label="")
+
+  # Add the lines corresponding to the provided models
+  for i in range (0, len(slopes)):
+    y_0 = slopes[i] * x.min() + biases[i]
+    y_1 = slopes[i] * x.max() + biases[i]
+    plt.plot([x.min(), x.max()], [y_0, y_1],
+             label=model_names[i], color=colors[i])
+  if (len(model_names) > 0):
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+  plt.show()
+
+
+
+def RMSE(way, x, y):
+
+	clean_data = CLEAN(way)
+	way_s = str(way).lower()
+
+	ways = way_s[-4:]
+	if (ways[0] == ':'):
+		ways = ways[-3:]
+
+	# Plotting the new data set where rows where interpolated or estimated (filled)
+	LABEL3 = "losses"
+	INPUT_FEATURE3 = "price" 
+
+	# model bias
+	x3 = clean_data[INPUT_FEATURE3]
+	y3 = clean_data[LABEL3]
+	opt3 = np.polyfit(x3, y3, 1)
+	y_pred3 = opt3[0] * x3 + opt3[1]
+	opt_rmse3 = math.sqrt(metrics.mean_squared_error(y_pred3, y3))
+	print("Root mean squared error for mean substitution") 
+	print( opt_rmse3)
+	slope3 = opt3[0]
+	bias3 = opt3[1]
+
+	LABEL3 = "losses"
+	INPUT_FEATURE3 = "price" 
+	plt.ylabel(LABEL3)
+	plt.xlabel(INPUT_FEATURE3)
+	plt.scatter(clean_data[INPUT_FEATURE3], clean_data[LABEL3], c='black')
+	plt.title('Scatter Plot when Nan subtittuted by ' + ways)
+	make_scatter_plot(clean_data,INPUT_FEATURE3, LABEL3,
+					[slope3], [bias3], ["initial model"])
+	plt.show()
+
+
+#examples on how to run it in python
+# FEATURES()
+# TRANSFORM('losses')
+# CLEAN('zero')
+# RMSE('zero', 'prices', 'losses')
+
+#examples on how to run it in datavity
+# FEATURES()
+# TRANSFORM(feature) where feature is any string
+# CLEAN(ZERO) it can be also MIN, MAX, MEAN
+# RMSE(ZERO, feature, feature) where feature is any string & first param can be also MIN, MAX, MEAN
 
 #######################################
 # RUN
