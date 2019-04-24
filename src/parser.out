@@ -1,0 +1,225 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> define
+Rule 1     define -> features
+Rule 2     define -> clean
+Rule 3     define -> transform
+Rule 4     define -> rmse
+Rule 5     features -> FEATURES LPAREN RPAREN
+Rule 6     clean -> CLEAN LPAREN ID RPAREN
+Rule 7     transform -> TRANSFORM LPAREN ID RPAREN
+Rule 8     rmse -> RMSE LPAREN ID COMMA ID COMMA ID RPAREN
+
+Terminals, with rules where they appear
+
+CLEAN                : 6
+COMMA                : 8 8
+FEATURES             : 5
+ID                   : 6 7 8 8 8
+LPAREN               : 5 6 7 8
+RMSE                 : 8
+RPAREN               : 5 6 7 8
+TRANSFORM            : 7
+error                : 
+
+Nonterminals, with rules where they appear
+
+clean                : 2
+define               : 0
+features             : 1
+rmse                 : 4
+transform            : 3
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . define
+    (1) define -> . features
+    (2) define -> . clean
+    (3) define -> . transform
+    (4) define -> . rmse
+    (5) features -> . FEATURES LPAREN RPAREN
+    (6) clean -> . CLEAN LPAREN ID RPAREN
+    (7) transform -> . TRANSFORM LPAREN ID RPAREN
+    (8) rmse -> . RMSE LPAREN ID COMMA ID COMMA ID RPAREN
+
+    FEATURES        shift and go to state 6
+    CLEAN           shift and go to state 7
+    TRANSFORM       shift and go to state 8
+    RMSE            shift and go to state 9
+
+    define                         shift and go to state 1
+    features                       shift and go to state 2
+    clean                          shift and go to state 3
+    transform                      shift and go to state 4
+    rmse                           shift and go to state 5
+
+state 1
+
+    (0) S' -> define .
+
+
+
+state 2
+
+    (1) define -> features .
+
+    $end            reduce using rule 1 (define -> features .)
+
+
+state 3
+
+    (2) define -> clean .
+
+    $end            reduce using rule 2 (define -> clean .)
+
+
+state 4
+
+    (3) define -> transform .
+
+    $end            reduce using rule 3 (define -> transform .)
+
+
+state 5
+
+    (4) define -> rmse .
+
+    $end            reduce using rule 4 (define -> rmse .)
+
+
+state 6
+
+    (5) features -> FEATURES . LPAREN RPAREN
+
+    LPAREN          shift and go to state 10
+
+
+state 7
+
+    (6) clean -> CLEAN . LPAREN ID RPAREN
+
+    LPAREN          shift and go to state 11
+
+
+state 8
+
+    (7) transform -> TRANSFORM . LPAREN ID RPAREN
+
+    LPAREN          shift and go to state 12
+
+
+state 9
+
+    (8) rmse -> RMSE . LPAREN ID COMMA ID COMMA ID RPAREN
+
+    LPAREN          shift and go to state 13
+
+
+state 10
+
+    (5) features -> FEATURES LPAREN . RPAREN
+
+    RPAREN          shift and go to state 14
+
+
+state 11
+
+    (6) clean -> CLEAN LPAREN . ID RPAREN
+
+    ID              shift and go to state 15
+
+
+state 12
+
+    (7) transform -> TRANSFORM LPAREN . ID RPAREN
+
+    ID              shift and go to state 16
+
+
+state 13
+
+    (8) rmse -> RMSE LPAREN . ID COMMA ID COMMA ID RPAREN
+
+    ID              shift and go to state 17
+
+
+state 14
+
+    (5) features -> FEATURES LPAREN RPAREN .
+
+    $end            reduce using rule 5 (features -> FEATURES LPAREN RPAREN .)
+
+
+state 15
+
+    (6) clean -> CLEAN LPAREN ID . RPAREN
+
+    RPAREN          shift and go to state 18
+
+
+state 16
+
+    (7) transform -> TRANSFORM LPAREN ID . RPAREN
+
+    RPAREN          shift and go to state 19
+
+
+state 17
+
+    (8) rmse -> RMSE LPAREN ID . COMMA ID COMMA ID RPAREN
+
+    COMMA           shift and go to state 20
+
+
+state 18
+
+    (6) clean -> CLEAN LPAREN ID RPAREN .
+
+    $end            reduce using rule 6 (clean -> CLEAN LPAREN ID RPAREN .)
+
+
+state 19
+
+    (7) transform -> TRANSFORM LPAREN ID RPAREN .
+
+    $end            reduce using rule 7 (transform -> TRANSFORM LPAREN ID RPAREN .)
+
+
+state 20
+
+    (8) rmse -> RMSE LPAREN ID COMMA . ID COMMA ID RPAREN
+
+    ID              shift and go to state 21
+
+
+state 21
+
+    (8) rmse -> RMSE LPAREN ID COMMA ID . COMMA ID RPAREN
+
+    COMMA           shift and go to state 22
+
+
+state 22
+
+    (8) rmse -> RMSE LPAREN ID COMMA ID COMMA . ID RPAREN
+
+    ID              shift and go to state 23
+
+
+state 23
+
+    (8) rmse -> RMSE LPAREN ID COMMA ID COMMA ID . RPAREN
+
+    RPAREN          shift and go to state 24
+
+
+state 24
+
+    (8) rmse -> RMSE LPAREN ID COMMA ID COMMA ID RPAREN .
+
+    $end            reduce using rule 8 (rmse -> RMSE LPAREN ID COMMA ID COMMA ID RPAREN .)
+
