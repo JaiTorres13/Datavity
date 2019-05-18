@@ -9,9 +9,11 @@ We start doing Feature Engineering by cleaning the data, this means replacing th
 number, or the mean number of the feature. The reason why sometimes there will be missing data, is because there are times the dataset 
 we are working with there will be some missing data. By having cleaned data, it will be more acceptable for the AI model and hence, will
 make better predictions. 
+
   After cleaning the data, we can make them even more attractive as an input by applying several methods like linear scaling and 
 clipping.The reason we alter the data is to make the features more similar to each other and that way, the model can make better 
 predictions. There are many ways to do feature engineering, but this project focuses on the basics of it.
+
   Datavity is a language based on Feature Engineering, that handles the data that receives by applying them several methods that we
 implemented. The methods consists on showing the features that the dataset has, replacing missing data with several options like zero 
 and mean, transforming the data by applying several scaling methods, and applying the Root Mean Square Error (RMSE).
@@ -33,7 +35,8 @@ Create a file named Datavity_PL and save the project there.
 Run the following commands in command prompt (Windows) or terminal (Ubuntu/MacOs).
 
 * MacOs/Ubuntu
-``` cd Datavity_PL/Datavity/src
+``` 
+    cd Datavity_PL/Datavity/src
     python3 shell.py 
 ```
 * Windows
@@ -75,16 +78,14 @@ this method is three graphs, where the first one is the data of the feature unch
 scaling, and the third one is the data after applying log scaling.
 
 ```
->> TRANSFORM(feature)
+>> TRANSFORM(feature_name)
 ```
 
 ### RMSE:
 
-From any desired video, the user has the chance of turning it into a gif. This means that the video will
-constantly loop. The rendering of this type of media takes as input, a variable that already holds 
-the video.
+
 ```
->> renderGif from clip
+>> RMSE(MAX || MIN || MEAN || ZERO, feature_name, feature_name)
 ```
 
 
