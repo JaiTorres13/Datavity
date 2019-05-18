@@ -114,6 +114,6 @@ dataframe replaced with clean_method & RMSE in the terminal.
 ## Authors 
 
 [Jainel M. Torres Santos](https://github.com/JaiTorres13)  
-[Cesar Justiniano](https://github.com/CesarJustiniano)  
-[Fabian Guzman](https://github.com/fabianguzman)  
+[César A Justiniano Santiago](https://github.com/CesarJustiniano)  
+[Fabián O. Guzman Aponte](https://github.com/fabianguzman)  
 
