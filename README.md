@@ -106,7 +106,7 @@ dataframe replaced with clean_method & RMSE in the terminal.
 
 ##  Datavity Report
 
-[Final-Report](https://drive.google.com/a/upr.edu/file/d/1bSyFR5kJeFgZNJ5eQpuhoILYY0k-cBTp/view?usp=sharing)
+[Final-Report](https://docs.google.com/document/d/1jk8X2sY4sJt3HYpEvjITodIPfbeaD5VImXQ-lsK1O0I/edit?usp=sharing)
 
 ## Github Page
 [Datavity-Github](https://github.com/JaiTorres13/Datavity)
