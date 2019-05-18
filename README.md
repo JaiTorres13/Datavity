@@ -30,14 +30,22 @@ Feature Engineering and handling data.
 ## Installation
 
 Must have installed **Python3.6** and the following list of libraries used for Feature Engineering:
+- string
+- math
+- IPython 
+- matplotlib 
+- pyplot
+- numpy 
+- pandas
+- sklearn
 
-Create a file named Datavity_PL and save the project there.
+Create a file in Desktop named Datavity_PL and save the project there.
 Run the following commands in command prompt (Windows) or terminal (Ubuntu/MacOs).
 
 * MacOs/Ubuntu
 ``` 
-    cd Datavity_PL/Datavity/src
-    python3 shell.py 
+    cd Desktop/Datavity_PL/Datavity/src
+    python3 terminal.py 
 ```
 * Windows
 ```Shell
@@ -83,6 +91,9 @@ scaling, and the third one is the data after applying log scaling.
 
 ### RMSE:
 
+The RMSE method applies the Root Mean Squared Error equation to the feature you want to predict (second one). The RMSE consists of 
+calculating how far is the predicted value from the real one. the output is a scatter plot with linear regression, & prints the 
+dataframe replaced with clean_method & RMSE in the terminal.
 
 ```
 >> RMSE(MAX || MIN || MEAN || ZERO, feature_name, feature_name)
@@ -93,10 +104,16 @@ scaling, and the third one is the data after applying log scaling.
 [![Watch the video](https://img.youtube.com/vi/CD2_CZT9ltw/maxresdefault.jpg)](https://youtu.be/CD2_CZT9ltw)
 
 
+##  Final Report
+
+[Final-Report](https://drive.google.com/a/upr.edu/file/d/1bSyFR5kJeFgZNJ5eQpuhoILYY0k-cBTp/view?usp=sharing)
+
+## Github Page
+[Datavity-Github](https://github.com/JaiTorres13/Datavity)
 
 ## Authors 
 
 [Jainel M. Torres Santos](https://github.com/JaiTorres13)  
-[Cesar Justiniano](https://github.com/ChristianPerez34)  
-[Fabian Guzman](https://github.com/alejoreyes96)  
+[Cesar Justiniano](https://github.com/CesarJustiniano)  
+[Fabian Guzman](https://github.com/fabianguzman)  
 
