@@ -104,7 +104,7 @@ dataframe replaced with clean_method & RMSE in the terminal.
 [![Watch the video](https://img.youtube.com/vi/CD2_CZT9ltw/maxresdefault.jpg)](https://youtu.be/CD2_CZT9ltw)
 
 
-##  Final Report
+##  Datavity Report
 
 [Final-Report](https://drive.google.com/a/upr.edu/file/d/1bSyFR5kJeFgZNJ5eQpuhoILYY0k-cBTp/view?usp=sharing)
 
